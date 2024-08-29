@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Estoque;
+use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -20,10 +21,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('estoque')->group(function () {
-    Route::get('/', [Estoque::class, 'listarEstoque']);
-    Route::post('/', [Estoque::class, 'criarEstoque']);
-    Route::delete('/{id}', [Estoque::class, 'deletarEstoque']);
-    Route::put('/', [Estoque::class, 'atualizar']);
+    Route::get('/', [EstoqueController::class, 'listarEstoque']);
+    Route::post('/', [EstoqueController::class, 'criarEstoque']);
+    Route::delete('/{id}', [EstoqueController::class, 'deletarEstoque']);
+    Route::put('/', [EstoqueController::class, 'atualizar']);
 });
 
 Route::middleware('auth')->group(function () {
