@@ -21,11 +21,10 @@ export default function Dashboard({ auth }) {
     ];
 
     const getAllEstoques = async () => {
-        router.get("/estoque", {}, {
-            onSuccess: (data) => {
-                console.log(data);
-            }
-        });
+        axios.get("/estoque").then((response) => {
+            console.log(response.data);
+        }
+        );
     };
 
     getAllEstoques();
