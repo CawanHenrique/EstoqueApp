@@ -1,8 +1,10 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import VetModal from "@/Components/VetModal";
 import { useState } from "react";
 import RegisterModal from "@/Components/RegisterModal.jsx";
+import axios from "axios";
+// router do inertia
 
 export default function Dashboard({ auth }) {
     const [openModal, setOpenModal] = useState(false);
@@ -17,6 +19,17 @@ export default function Dashboard({ auth }) {
         { id: 7, nome: "Coronavirose", qtd: 22 },
         { id: 8, nome: "Cinomose", qtd: 14 },
     ];
+
+    const getAllEstoques = async () => {
+        router.get("/estoque", {}, {
+            onSuccess: (data) => {
+                console.log(data);
+            }
+        });
+    };
+
+    getAllEstoques();
+
 
     return (
         <AuthenticatedLayout

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Estoque;
 use Illuminate\Http\Request;
 
-class Estoque extends Controller
+class EstoqueController extends Controller
 {
     public function listarEstoque()
     {
