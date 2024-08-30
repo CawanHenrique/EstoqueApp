@@ -25,6 +25,7 @@ Route::get('/estoque', [EstoqueController::class, 'listarEstoque']);
 Route::post('/estoque', [EstoqueController::class, 'criarEstoque']);
 Route::delete('/estoque/{id}', [EstoqueController::class, 'deletarEstoque']);
 Route::put('/estoque/{id}', [EstoqueController::class, 'atualizar']);
+Route::put('/estoque/{id}/consumir', [EstoqueController::class, 'consumirQuantidadeEstoque']);
 
 
 Route::middleware('auth')->group(function () {

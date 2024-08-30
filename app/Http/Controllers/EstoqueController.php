@@ -56,4 +56,21 @@ class EstoqueController extends Controller
         return response()->json($estoque);
     }
 
+    public function consumirQuantidadeEstoque(Request $request, $id)
+    {
+        $estoque = Estoque::find($id);
+
+        if (!$estoque) {
+            return response()->json(['message' => 'Item de estoque não encontrado!'], 404);
+        }
+
+        if ($request->quantidade > $estoque->quantidade) {
+            return response()->json(['message' => 'Quantidade insuficiente em estoque!'], 400);
+        }
+
+        $estoque->quantidade -= $request->quantidade;
+        $estoque->save();
+
+        return response()->json($estoque);
+    }
 }
