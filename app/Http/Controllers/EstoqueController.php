@@ -10,42 +10,50 @@ class EstoqueController extends Controller
 {
     public function listarEstoque()
     {
-        $estoques = Estoque::all();
-        return response()->json($estoques);
+        return Estoque::all();
     }
 
     public function criarEstoque(Request $request)
     {
-        $nome = $request->input('nome');
-        $quantidade = $request->input('quantidade');
-        $categoria = $request->input('categoria');
-
         $estoque = new Estoque();
-        $estoque->nome = $nome;
-        $estoque->quantidade = $quantidade;
-        $estoque->categoria = $categoria;
+        $estoque->nome = $request->nome;
+        $estoque->categoria = $request->categoria;
+        $estoque->quantidade = $request->quantidade;
         $estoque->save();
+
+        return response()->json($estoque);
     }
 
-    public function atualizarQuantidadeEstoque(Request $request)
+    public function deletarEstoque($id)
     {
-        $id = $request->route('id');
-        $action = $request->route('action');
+        Estoque::find($id)->delete();
+        return response()->json(['message' => 'Item deletado com sucesso!']);
+    }
+
+    public function atualizar(Request $request, $id)
+    {
+        $estoque = Estoque::find($id);
+        $estoque->nome = $request->nome;
+        $estoque->categoria = $request->categoria;
+        $estoque->quantidade = $request->quantidade;
+        $estoque->save();
+
+        return response()->json($estoque);
+    }
+
+    public function atualizarQuantidadeEstoque(Request $request, $id)
+    {
         $estoque = Estoque::find($id);
 
-        if ($action == 'adicionar') {
+        if ($request->action == 'adicionar') {
             $estoque->quantidade += 1;
         } else {
             $estoque->quantidade -= 1;
         }
 
         $estoque->save();
-    }
 
-    public function deletarEstoque($id)
-    {
-        $estoque = Estoque::find($id);
-        $estoque->delete();
+        return response()->json($estoque);
     }
 
 }
