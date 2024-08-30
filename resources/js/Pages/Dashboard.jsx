@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Dashboard({ auth }) {
     const [openModal, setOpenModal] = useState(false);
     const [openModalRegister, setOpenModalRegister] = useState(false);
+    const [privilage, setPrivilage] = useState("");
 
     const [estoque, setEstoque] = useState([]);
 
@@ -21,6 +22,8 @@ export default function Dashboard({ auth }) {
         categoria: "animal",
         quantidade: 0,
     });
+
+
 
     const getAllEstoques = async () => {
         axios.get("/estoque").then((response) => {
@@ -80,6 +83,7 @@ export default function Dashboard({ auth }) {
 
     useEffect(() => {
         getAllEstoques();
+        setPrivilage(auth.user.role);
     }, []);
 
     return (
@@ -95,15 +99,17 @@ export default function Dashboard({ auth }) {
             <ToastContainer />
 
             <div className="w-full h-screen flex flex-col p-4 bg-gray-100">
-                <div className="flex w-56 rounded-xl items-center bg-azulescuro">
-                    <button
-                        type="button"
-                        className="items-center text-white p-2"
-                        onClick={() => setOpenModalRegister(true)}
-                    >
-                        + REGISTRAR NOVO ITEM
-                    </button>
-                </div>
+                {privilage == 'admin' && (
+                    <div className="flex w-56 rounded-xl items-center bg-azulescuro">
+                        <button
+                            type="button"
+                            className="items-center text-white p-2"
+                            onClick={() => setOpenModalRegister(true)}
+                        >
+                            + REGISTRAR NOVO ITEM
+                        </button>
+                    </div>
+                )}
 
                 <RegisterModal
                     isOpenRegister={openModalRegister}
@@ -177,13 +183,15 @@ export default function Dashboard({ auth }) {
                                 >
                                     Editar
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={() => deletarItem(item.id)}
-                                    className="bg-red-500 text-white py-2 px-4 rounded-md"
-                                >
-                                    Deletar
-                                </button>
+                                {privilage == 'admin' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => deletarItem(item.id)}
+                                        className="bg-red-500 text-white py-2 px-4 rounded-md"
+                                    >
+                                        Deletar
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -225,12 +233,14 @@ export default function Dashboard({ auth }) {
                         </div>
                         <div className="flex justify-between">
                             <div className="flex justify-end">
-                                <button
-                                    className="bg-azulescuro text-white rounded-xl py-2 px-4"
-                                    onClick={() => atualizarItem(item.id, item)}
-                                >
-                                    Atualizar
-                                </button>
+                                {privilage == 'admin' && (
+                                    <button
+                                        className="bg-azulescuro text-white rounded-xl py-2 px-4"
+                                        onClick={() => atualizarItem(item.id, item)}
+                                    >
+                                        Atualizar
+                                    </button>
+                                )}
                             </div>
                             <div className="flex justify-end">
                                 <button
