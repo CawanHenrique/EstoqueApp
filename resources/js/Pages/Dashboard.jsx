@@ -173,15 +173,25 @@ export default function Dashboard({ auth }) {
                                 </p>
                             </div>
                             <div className="flex justify-end mt-auto space-x-2">
+                                {privilage == 'admin' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setItem(item);
+                                            setOpenModal(true);
+                                        }}
+                                        className="bg-azulciano text-white py-2 px-4 rounded-md"
+                                    >
+                                        Editar
+                                    </button>
+                                )}
+                                {/* botão de consumir*/}
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setItem(item);
-                                        setOpenModal(true);
-                                    }}
+                                    onClick={() => consumirQuantidadeEstoque(item.id, 1)}
                                     className="bg-azulciano text-white py-2 px-4 rounded-md"
                                 >
-                                    Editar
+                                    Consumir
                                 </button>
                                 {privilage == 'admin' && (
                                     <button
@@ -231,26 +241,26 @@ export default function Dashboard({ auth }) {
                                 />
                             </label>
                         </div>
-                        <div className="flex justify-between">
-                            <div className="flex justify-end">
-                                {privilage == 'admin' && (
+                        {privilage == 'admin' && (
+                            <div className="flex justify-between">
+                                <div className="flex justify-end">
                                     <button
                                         className="bg-azulescuro text-white rounded-xl py-2 px-4"
                                         onClick={() => atualizarItem(item.id, item)}
                                     >
                                         Atualizar
                                     </button>
-                                )}
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        className="bg-azulescuro text-white rounded-xl py-2 px-4"
+                                        onClick={() => consumirQuantidadeEstoque(item.id, 1)}
+                                    >
+                                        Consumir
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex justify-end">
-                                <button
-                                    className="bg-azulescuro text-white rounded-xl py-2 px-4"
-                                    onClick={() => consumirQuantidadeEstoque(item.id, 1)}
-                                >
-                                    Consumir
-                                </button>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </VetModal>
             </div>
