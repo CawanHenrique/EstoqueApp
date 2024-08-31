@@ -3,6 +3,7 @@
 use App\Http\Controllers\Estoque;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,14 @@ Route::post('/estoque', [EstoqueController::class, 'criarEstoque']);
 Route::delete('/estoque/{id}', [EstoqueController::class, 'deletarEstoque']);
 Route::put('/estoque/{id}', [EstoqueController::class, 'atualizar']);
 Route::put('/estoque/{id}/consumir', [EstoqueController::class, 'consumirQuantidadeEstoque']);
+
+Route::prefix('usuarios')->group(function () {
+    Route::get('/', [UserController::class, 'getAllUsers']);
+    Route::get('/{id}', [UserController::class, 'getUserById']);
+    Route::post('/', [UserController::class, 'createUser']);
+    Route::put('/{id}', [UserController::class, 'updateUser']);
+    Route::delete('/{id}', [UserController::class, 'deleteUser']);
+});
 
 
 Route::middleware('auth')->group(function () {
