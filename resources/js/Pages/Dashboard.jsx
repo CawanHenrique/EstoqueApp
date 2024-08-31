@@ -4,10 +4,12 @@ import VetModal from "@/Components/VetModal";
 import { useEffect, useState } from "react";
 import RegisterModal from "@/Components/RegisterModal.jsx";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 export default function Dashboard({ auth }) {
     const [openModal, setOpenModal] = useState(false);
@@ -23,59 +25,69 @@ export default function Dashboard({ auth }) {
         quantidade: 0,
     });
 
-
-
     const getAllEstoques = async () => {
-        axios.get("/estoque").then((response) => {
-            setEstoque(response.data);
-            toast.success("Estoque carregado com sucesso!");
-        }).catch(error => {
-            console.error("Erro ao carregar o estoque:", error);
-            toast.error("Erro ao carregar o estoque!");
-        })
+        axios
+            .get("/estoque")
+            .then((response) => {
+                setEstoque(response.data);
+                toast.success("Estoque carregado com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao carregar o estoque:", error);
+                toast.error("Erro ao carregar o estoque!");
+            });
     };
 
-
     const criarItem = async (item) => {
-        axios.post("/estoque", item).then(() => {
-            getAllEstoques();
-            setOpenModalRegister(false);
-            toast.success("Item registrado com sucesso!");
-        }).catch(error => {
-            console.error("Erro ao registrar o item:", error);
-            toast.error("Erro ao registrar o item!");
-        });
+        axios
+            .post("/estoque", item)
+            .then(() => {
+                getAllEstoques();
+                setOpenModalRegister(false);
+                toast.success("Item registrado com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao registrar o item:", error);
+                toast.error("Erro ao registrar o item!");
+            });
     };
 
     const atualizarItem = async (id, item) => {
-        axios.put(`/estoque/${id}`, item).then(() => {
-            getAllEstoques();
-            setOpenModal(false);
-            toast.success("Item atualizado com sucesso!");
-        }).catch(error => {
-            console.error("Erro ao atualizar o item:", error);
-            toast.error("Erro ao atualizar o item!");
-        });
+        axios
+            .put(`/estoque/${id}`, item)
+            .then(() => {
+                getAllEstoques();
+                setOpenModal(false);
+                toast.success("Item atualizado com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao atualizar o item:", error);
+                toast.error("Erro ao atualizar o item!");
+            });
     };
 
     const deletarItem = async (id) => {
-        axios.delete(`/estoque/${id}`).then(() => {
-            getAllEstoques();
-            toast.success("Item deletado com sucesso!");
-        }).catch(error => {
-            console.error("Erro ao deletar o item:", error);
-            toast.error("Erro ao deletar o item!");
-        });
+        axios
+            .delete(`/estoque/${id}`)
+            .then(() => {
+                getAllEstoques();
+                toast.success("Item deletado com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao deletar o item:", error);
+                toast.error("Erro ao deletar o item!");
+            });
     };
 
     const consumirQuantidadeEstoque = async (id, quantidade) => {
-        axios.put(`/estoque/${id}/consumir`, { quantidade })
+        axios
+            .put(`/estoque/${id}/consumir`, { quantidade })
             .then(() => {
                 getAllEstoques();
                 setOpenModal(false);
                 toast.success("Quantidade consumida com sucesso!");
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("Erro ao consumir a quantidade do item:", error);
                 toast.error("Erro ao consumir a quantidade do item!");
             });
@@ -98,8 +110,8 @@ export default function Dashboard({ auth }) {
             <Head title="Início" />
             <ToastContainer />
 
-            <div className="w-full h-screen flex flex-col p-4 bg-gray-100">
-                {privilage == 'admin' && (
+            <div className="w-full h-screen flex flex-col p-4">
+                {privilage == "admin" && (
                     <div className="flex w-56 rounded-xl items-center bg-azulescuro">
                         <button
                             type="button"
@@ -107,6 +119,20 @@ export default function Dashboard({ auth }) {
                             onClick={() => setOpenModalRegister(true)}
                         >
                             + REGISTRAR NOVO ITEM
+                        </button>
+                    </div>
+                )}
+
+                {privilage == "admin" && (
+                    <div className="flex w-56 rounded-xl mt-2 items-center">
+                        <button type="button" className="btn btn-outline-success">
+                            <FontAwesomeIcon
+                                icon={faFileExcel}
+                                color="green"
+                                className="mr-1"
+                                size="x"
+                            />
+                            Excel
                         </button>
                     </div>
                 )}
@@ -129,7 +155,10 @@ export default function Dashboard({ auth }) {
                                     placeholder="Digite o nome do item"
                                     className="border rounded p-2 mt-2 w-full"
                                     onChange={(e) =>
-                                        setItem({ ...item, nome: e.target.value })
+                                        setItem({
+                                            ...item,
+                                            nome: e.target.value,
+                                        })
                                     }
                                 />
                             </label>
@@ -142,6 +171,19 @@ export default function Dashboard({ auth }) {
                                         setItem({
                                             ...item,
                                             quantidade: e.target.value,
+                                        })
+                                    }
+                                />
+                            </label>
+                            <label>
+                                Categoria:
+                                <input
+                                    type="number"
+                                    className="border rounded p-2 mt-2 w-full"
+                                    onChange={(e) =>
+                                        setItem({
+                                            ...item,
+                                            categoria: e.target.value,
                                         })
                                     }
                                 />
@@ -171,9 +213,12 @@ export default function Dashboard({ auth }) {
                                 <p className="text-azulescuro font-bold">
                                     Quantidade: {item.quantidade}
                                 </p>
+                                <p className="text-azulescuro font-bold">
+                                    Categoria: {item.categoria}
+                                </p>
                             </div>
                             <div className="flex justify-end mt-auto space-x-2">
-                                {privilage == 'admin' && (
+                                {privilage == "admin" && (
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -188,12 +233,14 @@ export default function Dashboard({ auth }) {
                                 {/* botão de consumir*/}
                                 <button
                                     type="button"
-                                    onClick={() => consumirQuantidadeEstoque(item.id, 1)}
+                                    onClick={() =>
+                                        consumirQuantidadeEstoque(item.id, 1)
+                                    }
                                     className="bg-azulciano text-white py-2 px-4 rounded-md"
                                 >
                                     Consumir
                                 </button>
-                                {privilage == 'admin' && (
+                                {privilage == "admin" && (
                                     <button
                                         type="button"
                                         onClick={() => deletarItem(item.id)}
@@ -212,7 +259,9 @@ export default function Dashboard({ auth }) {
                     setModalOpen={() => setOpenModal(!openModal)}
                 >
                     <div className="flex flex-col w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-                        <h1 className="text-xl font-bold mb-4">Editar Produto</h1>
+                        <h1 className="text-xl font-bold mb-4">
+                            Editar Produto
+                        </h1>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <label>
                                 Item:
@@ -222,7 +271,10 @@ export default function Dashboard({ auth }) {
                                     placeholder="Digite o nome do item"
                                     className="border rounded p-2 mt-2 w-full"
                                     onChange={(e) =>
-                                        setItem({ ...item, nome: e.target.value })
+                                        setItem({
+                                            ...item,
+                                            nome: e.target.value,
+                                        })
                                     }
                                 />
                             </label>
@@ -241,12 +293,14 @@ export default function Dashboard({ auth }) {
                                 />
                             </label>
                         </div>
-                        {privilage == 'admin' && (
+                        {privilage == "admin" && (
                             <div className="flex justify-between">
                                 <div className="flex justify-end">
                                     <button
                                         className="bg-azulescuro text-white rounded-xl py-2 px-4"
-                                        onClick={() => atualizarItem(item.id, item)}
+                                        onClick={() =>
+                                            atualizarItem(item.id, item)
+                                        }
                                     >
                                         Atualizar
                                     </button>
@@ -254,7 +308,12 @@ export default function Dashboard({ auth }) {
                                 <div className="flex justify-end">
                                     <button
                                         className="bg-azulescuro text-white rounded-xl py-2 px-4"
-                                        onClick={() => consumirQuantidadeEstoque(item.id, 1)}
+                                        onClick={() =>
+                                            consumirQuantidadeEstoque(
+                                                item.id,
+                                                1
+                                            )
+                                        }
                                     >
                                         Consumir
                                     </button>
