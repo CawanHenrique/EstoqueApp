@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Estoque;
 use App\Http\Controllers\EstoqueController;
+use App\Http\Controllers\HistoricoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -34,6 +35,11 @@ Route::prefix('usuarios')->group(function () {
     Route::post('/', [UserController::class, 'createUser']);
     Route::put('/{id}', [UserController::class, 'updateUser']);
     Route::delete('/{id}', [UserController::class, 'deleteUser']);
+});
+
+Route::prefix('historico')->group(function () {
+    Route::get('/', [HistoricoController::class, 'listarHistorico']);
+    Route::post('/', [HistoricoController::class, 'criarHistorico']);
 });
 
 
