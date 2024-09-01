@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('historicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('estoque_id')->constrained('estoques');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('estoque_id')
+                ->constrained('estoques')
+                ->onDelete('cascade'); // Adiciona a cláusula ON DELETE CASCADE
             $table->string('acao');
             $table->integer('quantidade');
             $table->timestamps();
