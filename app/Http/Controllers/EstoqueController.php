@@ -85,7 +85,7 @@ class EstoqueController extends Controller
 
         $estoque->update($validatedData);
 
-        $this->historicoService->criarHistorico($id, 'atualizar', $validatedData['quantidade'] ?? $estoque->quantidade);
+        $this->historicoService->criarHistorico($id, 'atualizar', $estoque->quantidade);
 
         return response()->json($estoque, 200);
     }
