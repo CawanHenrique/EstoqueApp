@@ -38,10 +38,8 @@ Route::prefix('usuarios')->group(function () {
 });
 
 Route::prefix('historico')->group(function () {
-    Route::get('/', [HistoricoController::class, 'listarHistorico']);
-    Route::post('/', [HistoricoController::class, 'criarHistorico']);
+    Route::get('/getAllHistory', [HistoricoController::class, 'getAllHistory']);
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
