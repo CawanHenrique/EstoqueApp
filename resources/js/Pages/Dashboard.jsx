@@ -283,7 +283,7 @@ export default function Dashboard({ auth }) {
                 >
                     <div className="flex flex-col items-center rounded-lg bg-white p-6">
                         <h1 className="mb-4 text-center text-xl font-bold">
-                            Deseja deletar esse usuário permanentemente?
+                            Deseja deletar esse item permanentemente?
                         </h1>
                         <div className="mt-4 flex flex-row space-x-4">
                             <button
