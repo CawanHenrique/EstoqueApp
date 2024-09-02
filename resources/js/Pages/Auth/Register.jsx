@@ -9,7 +9,7 @@ export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
-        role: 'admin',
+        role: 'Admin',
         password: '',
         password_confirmation: '',
     });

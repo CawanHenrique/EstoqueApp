@@ -25,7 +25,7 @@ class EstoqueController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'admin') {
+        if (!$user || $user->role !== 'Admin') {
             return response()->json(['message' => 'Você não tem permissão para criar um item de estoque!'], 403);
         }
 
@@ -46,7 +46,7 @@ class EstoqueController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'admin') {
+        if (!$user || $user->role !== 'Admin') {
             return response()->json(['message' => 'Você não tem permissão para deletar um item de estoque!'], 403);
         }
 
@@ -67,7 +67,7 @@ class EstoqueController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'admin') {
+        if (!$user || $user->role !== 'Admin') {
             return response()->json(['message' => 'Você não tem permissão para atualizar um item de estoque!'], 403);
         }
 

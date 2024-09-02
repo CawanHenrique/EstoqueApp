@@ -6,8 +6,11 @@ import RegisterModal from "@/Components/RegisterModal.jsx";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import DeleteModal from "@/Components/DeleteModal";
+import * as XLSX from "xlsx";
+import { Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -15,6 +18,8 @@ export default function Dashboard({ auth }) {
     const [openModal, setOpenModal] = useState(false);
     const [openModalRegister, setOpenModalRegister] = useState(false);
     const [privilage, setPrivilage] = useState("");
+    const [openModalDelete, setOpenModalDelete] = useState(false);
+    const [idDelete, setIdDelete] = useState([]);
 
     const [estoque, setEstoque] = useState([]);
 
@@ -36,6 +41,21 @@ export default function Dashboard({ auth }) {
                 console.error("Erro ao carregar o estoque:", error);
                 toast.error("Erro ao carregar o estoque!");
             });
+    };
+
+    const handleExport = () => {
+        // Exemplo de como personalizar as colunas exportadas
+        const customData = estoque.map((item) => ({
+            Nome: item.nome,
+            Quantidade: item.quantidade,
+            Categoria: item.categoria,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(customData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        XLSX.writeFile(workbook, "estoque.xlsx");
     };
 
     const criarItem = async (item) => {
@@ -67,7 +87,7 @@ export default function Dashboard({ auth }) {
     };
 
     const deletarItem = async (id) => {
-        axios
+        await axios
             .delete(`/estoque/${id}`)
             .then(() => {
                 getAllEstoques();
@@ -99,61 +119,58 @@ export default function Dashboard({ auth }) {
     }, []);
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-azulescuro leading-tight">
-                    Estoque
-                </h2>
-            }
-        >
-            <Head title="Início" />
+        <AuthenticatedLayout user={auth.user}>
+            <Head title="Estoque" />
             <ToastContainer />
 
-            <div className="w-full h-screen flex flex-col p-4">
-                {privilage == "admin" && (
-                    <div className="flex w-56 rounded-xl items-center bg-azulescuro">
-                        <button
-                            type="button"
-                            className="items-center text-white p-2"
-                            onClick={() => setOpenModalRegister(true)}
-                        >
-                            + REGISTRAR NOVO ITEM
-                        </button>
-                    </div>
-                )}
+            <div className="flex h-screen w-full flex-col p-4">
+                <div className="flex flex-row space-x-5">
+                    {privilage == "Admin" && (
+                        <div className="flex w-44 transform rounded-lg bg-azulciano transition-transform duration-300 hover:scale-105 hover:shadow-lg">
+                            <button
+                                type="button"
+                                className="flex w-full transform items-center justify-center rounded-lg px-3 py-1 font-semibold text-white transition-transform"
+                                onClick={() => setOpenModalRegister(true)}
+                            >
+                                + REGISTRAR ITEM
+                            </button>
+                        </div>
+                    )}
 
-                {privilage == "admin" && (
-                    <div className="flex w-56 rounded-xl mt-2 items-center">
-                        <button type="button" className="btn btn-outline-success">
-                            <FontAwesomeIcon
-                                icon={faFileExcel}
-                                color="green"
-                                className="mr-1"
-                                size="x"
-                            />
-                            Excel
-                        </button>
-                    </div>
-                )}
-
+                    {privilage == "Admin" && (
+                        <div className="mt-2 flex w-56 transform items-center rounded-xl hover:scale-105 hover:transition-transform">
+                            <button
+                                type="button"
+                                className="btn btn-outline-success"
+                                onClick={() => handleExport()}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faFileExcel}
+                                    className="mr-1 !text-whitegroup-hover:text-white"
+                                    size="x"
+                                />
+                                Excel
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <RegisterModal
                     isOpenRegister={openModalRegister}
                     setModalOpenRegister={() =>
                         setOpenModalRegister(!openModalRegister)
                     }
                 >
-                    <div className="flex flex-col w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-                        <h1 className="text-xl font-bold mb-4">
+                    <div className="mx-auto flex w-full max-w-lg flex-col rounded-lg bg-white p-6">
+                        <h1 className="mb-4 text-xl font-bold">
                             Registro de produto
                         </h1>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                             <label>
                                 Item:
                                 <input
                                     type="text"
                                     placeholder="Digite o nome do item"
-                                    className="border rounded p-2 mt-2 w-full"
+                                    className="mt-2 w-full rounded border p-2"
                                     onChange={(e) =>
                                         setItem({
                                             ...item,
@@ -166,7 +183,7 @@ export default function Dashboard({ auth }) {
                                 Quantidade:
                                 <input
                                     type="number"
-                                    className="border rounded p-2 mt-2 w-full"
+                                    className="mt-2 w-full rounded border p-2"
                                     onChange={(e) =>
                                         setItem({
                                             ...item,
@@ -178,8 +195,8 @@ export default function Dashboard({ auth }) {
                             <label>
                                 Categoria:
                                 <input
-                                    type="number"
-                                    className="border rounded p-2 mt-2 w-full"
+                                    type="text"
+                                    className="mt-2 w-full rounded border p-2"
                                     onChange={(e) =>
                                         setItem({
                                             ...item,
@@ -191,7 +208,7 @@ export default function Dashboard({ auth }) {
                         </div>
                         <div className="flex justify-end">
                             <button
-                                className="bg-azulescuro text-white rounded-xl py-2 px-4"
+                                className="transform rounded-xl bg-azulescuro px-4 py-2 text-white transition-transform duration-300 hover:scale-105 hover:shadow-lg"
                                 onClick={() => criarItem(item)}
                             >
                                 Registrar
@@ -200,76 +217,110 @@ export default function Dashboard({ auth }) {
                     </div>
                 </RegisterModal>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {estoque.map((item) => (
                         <div
                             key={item.id}
-                            className="flex flex-col bg-white shadow-md p-4 rounded-lg"
+                            className="flex flex-col rounded-lg bg-white p-4 shadow-md"
                         >
-                            <div className="flex flex-col mb-4">
-                                <p className="text-azulescuro font-bold">
+                            <div className="mb-4 flex flex-col">
+                                <p className="font-bold text-azulescuro">
                                     Item: {item.nome}
                                 </p>
-                                <p className="text-azulescuro font-bold">
+                                <p className="font-bold text-azulescuro">
                                     Quantidade: {item.quantidade}
                                 </p>
-                                <p className="text-azulescuro font-bold">
+                                <p className="font-bold text-azulescuro">
                                     Categoria: {item.categoria}
                                 </p>
                             </div>
-                            <div className="flex justify-end mt-auto space-x-2">
-                                {privilage == "admin" && (
+                            <div className="mt-auto flex justify-end">
+                                {privilage == "Admin" && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIdDelete(item.id);
+                                            setOpenModalDelete(
+                                                !openModalDelete,
+                                            );
+                                        }}
+                                        className="w-2 transform rounded-md px-4 py-2 text-white transition-transform hover:scale-105"
+                                    >
+                                        <Trash2 className="text-red-600" />
+                                    </button>
+                                )}
+
+                                {privilage == "Admin" && (
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setItem(item);
                                             setOpenModal(true);
                                         }}
-                                        className="bg-azulciano text-white py-2 px-4 rounded-md"
+                                        className="transform rounded-md px-4 py-2 transition-transform hover:scale-105"
                                     >
-                                        Editar
+                                        <Pencil className="text-azulescuro" />
                                     </button>
                                 )}
-                                {/* botão de consumir*/}
                                 <button
                                     type="button"
                                     onClick={() =>
                                         consumirQuantidadeEstoque(item.id, 1)
                                     }
-                                    className="bg-azulciano text-white py-2 px-4 rounded-md"
+                                    className="transform rounded-md bg-azulescuro px-4 py-2 text-white transition-transform hover:scale-105"
                                 >
                                     Consumir
                                 </button>
-                                {privilage == "admin" && (
-                                    <button
-                                        type="button"
-                                        onClick={() => deletarItem(item.id)}
-                                        className="bg-red-500 text-white py-2 px-4 rounded-md"
-                                    >
-                                        Deletar
-                                    </button>
-                                )}
                             </div>
                         </div>
                     ))}
                 </div>
+                <DeleteModal
+                    isOpenDelete={openModalDelete}
+                    setModalOpenDelete={() =>
+                        setOpenModalDelete(!openModalDelete)
+                    }
+                >
+                    <div className="flex flex-col items-center rounded-lg bg-white p-6">
+                        <h1 className="mb-4 text-center text-xl font-bold">
+                            Deseja deletar esse usuário permanentemente?
+                        </h1>
+                        <div className="mt-4 flex flex-row space-x-4">
+                            <button
+                                className="w-24 transform rounded-lg bg-teal-500 p-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-teal-400"
+                                onClick={() => {
+                                    setOpenModalDelete(!openModalDelete);
+                                    deletarItem(idDelete);
+                                }}
+                            >
+                                Sim
+                            </button>
+                            <button
+                                onClick={() => setOpenModalDelete(false)}
+                                className="w-24 transform rounded-lg bg-red-500 p-2 font-semibold text-white transition-transform hover:scale-105 hover:bg-red-400"
+                            >
+                                Não
+                            </button>
+                        </div>
+                    </div>
+                </DeleteModal>
 
                 <VetModal
                     isOpen={openModal}
                     setModalOpen={() => setOpenModal(!openModal)}
                 >
-                    <div className="flex flex-col w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-                        <h1 className="text-xl font-bold mb-4">
+                    <div className="mx-auto flex w-full max-w-lg flex-col rounded-lg bg-white p-6">
+                        <h1 className="mb-4 text-xl font-bold">
                             Editar Produto
                         </h1>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                             <label>
                                 Item:
                                 <input
                                     type="text"
                                     value={item.nome}
                                     placeholder="Digite o nome do item"
-                                    className="border rounded p-2 mt-2 w-full"
+                                    className="mt-2 w-full rounded border p-2"
                                     onChange={(e) =>
                                         setItem({
                                             ...item,
@@ -283,7 +334,7 @@ export default function Dashboard({ auth }) {
                                 <input
                                     type="number"
                                     value={item.quantidade}
-                                    className="border rounded p-2 mt-2 w-full"
+                                    className="mt-2 w-full rounded border p-2"
                                     onChange={(e) =>
                                         setItem({
                                             ...item,
@@ -292,30 +343,31 @@ export default function Dashboard({ auth }) {
                                     }
                                 />
                             </label>
+                            <label>
+                                Categoria:
+                                <input
+                                    type="text"
+                                    value={item.categoria}
+                                    className="mt-2 w-full rounded border p-2"
+                                    onChange={(e) =>
+                                        setItem({
+                                            ...item,
+                                            categoria: e.target.value,
+                                        })
+                                    }
+                                />
+                            </label>
                         </div>
-                        {privilage == "admin" && (
-                            <div className="flex justify-between">
+                        {privilage == "Admin" && (
+                            <div className="flex justify-end space-x-3">
                                 <div className="flex justify-end">
                                     <button
-                                        className="bg-azulescuro text-white rounded-xl py-2 px-4"
+                                        className="transform rounded-xl bg-azulescuro px-4 py-2 text-white transition-transform hover:scale-105"
                                         onClick={() =>
                                             atualizarItem(item.id, item)
                                         }
                                     >
                                         Atualizar
-                                    </button>
-                                </div>
-                                <div className="flex justify-end">
-                                    <button
-                                        className="bg-azulescuro text-white rounded-xl py-2 px-4"
-                                        onClick={() =>
-                                            consumirQuantidadeEstoque(
-                                                item.id,
-                                                1
-                                            )
-                                        }
-                                    >
-                                        Consumir
                                     </button>
                                 </div>
                             </div>
