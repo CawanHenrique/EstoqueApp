@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('LoginPage', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
@@ -22,6 +22,14 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/historico' , function () {
+    return Inertia::render('Historico');
+})->middleware(['auth', 'verified'])->name('historico');
+
+// get usuarios route
+Route::get('/usuarios', function () {
+    return Inertia::render('Usuarios');
+})->middleware(['auth', 'verified'])->name('usuarios');
 
 Route::get('/estoque', [EstoqueController::class, 'listarEstoque']);
 Route::post('/estoque', [EstoqueController::class, 'criarEstoque']);
@@ -29,7 +37,7 @@ Route::delete('/estoque/{id}', [EstoqueController::class, 'deletarEstoque']);
 Route::put('/estoque/{id}', [EstoqueController::class, 'atualizar']);
 Route::put('/estoque/{id}/consumir', [EstoqueController::class, 'consumirQuantidadeEstoque']);
 
-Route::prefix('usuarios')->group(function () {
+Route::prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'getAllUsers']);
     Route::get('/{id}', [UserController::class, 'getUserById']);
     Route::post('/', [UserController::class, 'createUser']);
